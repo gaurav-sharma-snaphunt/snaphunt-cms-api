@@ -11,7 +11,9 @@
     "eject:react": "react-scripts eject"
   },
   "dependencies": {
+    "cookie-parser": "^1.4.4",
     "express": "^4.17.1",
+    "jsonwebtoken": "^8.5.1",
     "mongoose": "^5.5.14",
     "react": "^16.8.6",
     "react-dom": "^16.8.6",

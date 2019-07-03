@@ -1,13 +1,13 @@
-const express = require("express");
-const db = require("./db");
-const jwt = require("jsonwebtoken");
-const UserModel = require("./user.model");
+// const express = require("express");
+// const db = require("./db");
+// const jwToken = require("jsonwebtoken");
+// const UserModel = require("./user.model");
 // const cors = require("cors");
 
-const app = express();
+// const app = express();
 
 const generateToken = user =>
-  jwt.sign(
+  jwToken.sign(
     { sub: user.id, iat: new Date().getTime(), user: user.username },
     "a-secret-key",
     { expiresIn: "1h" }
@@ -26,10 +26,13 @@ app.post("/login", (req, res) => {
   const foundUser = UserModel.findOne({ username, password });
   if (foundUser) {
       const jwt = generateToken(foundUser);
-    res.json({ username: foundUser.username, token: jwt }).then(() => sessionStorage.setItem('JWT', jwt));
+      res.cookie('JWT', jwt); //name of cookie, variable in which token is stored
+    res.json({ username: foundUser.username, token: jwt });
   } else {
     res.sendStatus(401);
   }
 });
 
 app.post("/logout", (req, res) => {});
+
+module.exports = app;
