@@ -1,6 +1,7 @@
 const express = require("express");
 const app = express();
 const FeedbackModel = require("./feedback.model");
+const UserModel = require("./user.model");
 const feedback = require("./feedback");
 
 app.use(express.json());
@@ -19,6 +20,9 @@ app.get("/", (req, res, next) => {
 
 // returns array of all feedback items in db
 app.get("/feedback", async (req, res, next) => {
+  const jwt = sessionStorage.getItem("JWT");
+  req.headers.Authorization = "Bearer " + jwt;
+
   const foundFeedback = await FeedbackModel.find().catch(err => {
     err.status(400);
     err.message = `Could not return all feedback items`;
@@ -59,6 +63,28 @@ app.delete("/feedback/:id", async (req, res) => {
   } catch (err) {
     err.status(500);
     err.message = `Could not delete feedback item with id ${req.params.id}`;
+    next(err);
+  }
+});
+
+//returns a list of all users of the app
+app.get('/user', async (req, res, next) => {
+    const foundUser = await UserModel.find().catch(err => {
+    err.status(400);
+    err.message = `Could not return all users`;
+    next(err);
+  });
+  res.status(200).send(foundUser);
+})
+
+//updates an existing feedback item in db
+app.put("/user/:id/feedback/:id", async (req, res, next) => {
+  try {
+    const updatedFeedback = await findOneAndUpdate(req.params.id, req.body);
+    res.status(200).send(updatedFeedback);
+  } catch (err) {
+    err.status(500);
+    err.message = `Could not update feedback item with id ${req.params.id}`;
     next(err);
   }
 });
