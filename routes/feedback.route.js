@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const FeedbackModel = require("../models/feedback.model");
-const UserModel = require("../models/user.model")
+const UserModel = require("../models/user.model");
 const feedbackMethod = require("../methods/feedback.methods");
 const jwToken = require("jsonwebtoken");
 
@@ -16,21 +16,24 @@ const authenticate = async cookie => {
 // permissions: S,I
 router.get("/", async (req, res, next) => {
   let decodedToken;
+  let result;
   try {
-    decodedToken = await authenticate(req.cookies);
+    result = req.headers.Authorization.split(" ")[1];
+    if (result) {
+      decodedToken = jwToken.verify(result, "a-secret-key");
+    }
   } catch (err) {
     err.message = `Unauthorized. Log in details are incorrect.`;
     return next(err);
   }
-  console.log("decodedToken is: ", decodedToken); //HOW TO RETRIVE SUB?
   if (!decodedToken) {
     throw new Error(`decodedToken is invalid. (Token is ${decodedToken})`);
   }
-  const foundFeedback = await FeedbackModel.find().catch(err => {
+  const foundFeedback = await FeedbackModel.find({ isRemoved: false }).catch(err => {
     err.message = `Could not return all feedback items`;
     return next(err);
   });
-  
+
   return res.status(200).json(foundFeedback);
 });
 
@@ -88,7 +91,9 @@ router.delete("/:id", async (req, res, next) => {
     // err.message = `Could not delete feedback item with id ${req.params.id}`;
     return next(err);
   }
-  res.status(200).send(`Successfully deleted feedback item ${deletedFeedback.text}`);
+  res
+    .status(200)
+    .send(`Successfully deleted feedback item ${deletedFeedback.text}`);
 });
 
 //archives all open feedback items
