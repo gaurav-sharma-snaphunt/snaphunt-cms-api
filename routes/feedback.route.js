@@ -30,6 +30,7 @@ router.get("/", async (req, res, next) => {
     err.message = `Could not return all feedback items`;
     return next(err);
   });
+  
   return res.status(200).json(foundFeedback);
 });
 

@@ -29,7 +29,7 @@ router.post("/login", async (req, res) => {
   if (foundUser) {
     const jwt = await generateToken(foundUser);
     res.cookie("JWT", jwt, { expires: new Date(Date.now() + 1000 * 60 * 15) }); //cookie expires in 15 minutes, makes cookie persistent.
-    return res.json({ username: foundUser.username, token: jwt });
+    return res.status(200).json({ username: foundUser.username, token: jwt });
   } else {
     return res.status(401).json("User not found");
   }
