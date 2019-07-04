@@ -5,8 +5,6 @@ const UserModel = require("../models/user.model");
 const feedbackMethod = require("../methods/feedback.methods");
 const jwToken = require("jsonwebtoken");
 
-//cookie-parser is called in app.js
-
 const authenticate = async cookie => {
   const { JWT } = cookie;
   return await jwToken.verify(JWT, "a-secret-key");
@@ -17,8 +15,11 @@ const authenticate = async cookie => {
 router.get("/", async (req, res, next) => {
   let decodedToken;
   let result;
+  console.log("req.headers ", req.headers);
+  console.log("auth", req.headers.authorization);
+  console.log("Auth", req.headers.Authorization);
   try {
-    result = req.headers.Authorization.split(" ")[1];
+    result = req.headers.authorization.split(" ")[1];
     if (result) {
       decodedToken = jwToken.verify(result, "a-secret-key");
     }
@@ -29,11 +30,12 @@ router.get("/", async (req, res, next) => {
   if (!decodedToken) {
     throw new Error(`decodedToken is invalid. (Token is ${decodedToken})`);
   }
-  const foundFeedback = await FeedbackModel.find({ isRemoved: false }).catch(err => {
-    err.message = `Could not return all feedback items`;
-    return next(err);
-  });
-
+  const foundFeedback = await FeedbackModel.find({ isRemoved: false }).catch(
+    err => {
+      err.message = `Could not return all feedback items`;
+      return next(err);
+    }
+  );
   return res.status(200).json(foundFeedback);
 });
 

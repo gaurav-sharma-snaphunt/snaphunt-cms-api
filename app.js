@@ -14,15 +14,13 @@ app.use("/jwt", jwtRouter);
 
 //returns Hello World
 app.get("/", (req, res) => {
-  res
-    .status(200)
-    .send("Hello World")
+  res.status(200).send("Hello World");
 });
 
 //Error handler
 //use try-catch if error handler is not last function that is executed
 app.use((err, req, res, next) => {
-    console.log("app.js error handler was called");
+  console.log("app.js error handler was called");
   if (!err.message) {
     return res
       .status(500)

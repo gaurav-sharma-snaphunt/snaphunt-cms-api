@@ -6,7 +6,6 @@ const jwToken = require("jsonwebtoken");
 //cookie parser is called in app.js
 
 const generateToken = user => {
-
   return jwToken.sign(
     {
       sub: user.id,
