@@ -5,7 +5,7 @@ const mongoOptions = {
 };
 
 const dbUrl = global.__MONGO_URI__ || "mongodb://localhost:27017/Feedback"; //Database name
-mongoose.connect(dbUrl, mongoOptions);
+mongoose.connect(dbUrl, mongoOptions); //establishing connection between server and db 
 const db = mongoose.connection;
 
 db.on("error", console.error.bind(console, "connection error:"));

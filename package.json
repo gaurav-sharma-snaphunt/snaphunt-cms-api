@@ -1,8 +1,9 @@
 {
   "name": "react-express-mongoose-project2",
-  "version": "0.0.1",
+  "version": "0.1.5",
   "scripts": {
     "start:nodemon": "nodemon server.js",
+    "start:dev": "brew services start mongodb && nodemon server.js",
     "test:jest": "jest",
     "test:jest:watch": "jest --watch",
     "start:react": "react-scripts start",

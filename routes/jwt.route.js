@@ -1,36 +1,41 @@
 const express = require("express");
 const router = express.Router();
-const UserModel = require("./user.model");
-// var cookieParser = require("cookie-parser");
+const UserModel = require("../models/user.model");
 const jwToken = require("jsonwebtoken");
 
-// router.use(cookieParser());
+//cookie parser is called in app.js
 
-const generateToken = user =>
-  jwToken.sign(
-    { sub: user.id, iat: new Date().getTime(), user: user.username },
+const generateToken = user => {
+
+  return jwToken.sign(
+    {
+      sub: user.id,
+      iat: new Date().getTime()
+    },
     "a-secret-key",
-    { expiresIn: "1h" }
+    { expiresIn: "1h" } //token expires in 1 hour. Not limiting factor as cookie expires in 15 minutes.
   );
+};
 
+//returns Token route is working
 router.get("/", (req, res) => {
   res.send("Token route is working").status(200);
 });
 
+//logs valid user into app based on user's username and password
 router.post("/login", async (req, res) => {
   const { username, password } = req.body;
-  console.log("req.body is: ", req.body);
   const foundUser = await UserModel.findOne({ username, password });
-  console.log("foundUser is: ", foundUser);
   if (foundUser) {
     const jwt = await generateToken(foundUser);
-    res.cookie("JWT", jwt);
+    res.cookie("JWT", jwt, { expires: new Date(Date.now() + 1000 * 60 * 15) }); //cookie expires in 15 minutes, makes cookie persistent.
     return res.json({ username: foundUser.username, token: jwt });
   } else {
     return res.status(401).json("User not found");
   }
 });
 
+//logs user out of app
 router.post("/logout", (req, res, next) => {
   try {
     res.clearCookie("JWT");

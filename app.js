@@ -1,8 +1,8 @@
 const express = require("express");
 const app = express();
 var cookieParser = require("cookie-parser");
-const feedbackRouter = require("./feedback.route");
-const jwtRouter = require("./jwt.route");
+const feedbackRouter = require("./routes/feedback.route");
+const jwtRouter = require("./routes/jwt.route");
 
 app.use(express.json());
 app.use(cookieParser());
@@ -24,24 +24,10 @@ app.get("/", (req, res, next) => {
 
 // //returns a list of all users of the app
 // app.get('/user', async (req, res, next) => {
-//     const foundUser = await UserModel.find().catch(err => {
-//     err.status = 400;
-//     err.message = `Could not return all users`;
-//     next(err);
-//   });
-//   res.status(200).send(foundUser);
 // })
 
 // //updates an existing feedback item in db
 // app.put("/user/:userId/feedback/:feedbackId", async (req, res, next) => {
-//   try {
-//     const updatedFeedback = await findOneAndUpdate(req.params.id, req.body);
-//     res.status(200).send(updatedFeedback);
-//   } catch (err) {
-//     err.status = 500;
-//     err.message = `Could not update feedback item with id ${req.params.id}`;
-//     next(err);
-//   }
 // });
 
 //Error handler
