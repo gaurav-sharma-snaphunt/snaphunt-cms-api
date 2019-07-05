@@ -5,9 +5,19 @@ const UserModel = require("../models/user.model");
 const feedbackMethod = require("../methods/feedback.methods");
 const jwToken = require("jsonwebtoken");
 
-const authenticate = async cookie => {
-  const { JWT } = cookie;
-  return await jwToken.verify(JWT, "a-secret-key");
+const authenticate = reqHeader => {
+  let decodedToken;
+  const result = reqHeader.authorization.split(" ")[1];
+  if (result) {
+    try{
+    decodedToken = jwToken.verify(result, "a-secret-key");
+    return decodedToken;
+    } catch(err) {
+      throw new Error("Session expired")
+    }
+  } else {
+    throw new Error("Not logged in");
+  }
 };
 
 // returns array of all feedback items in db
@@ -15,16 +25,13 @@ const authenticate = async cookie => {
 router.get("/", async (req, res, next) => {
   let decodedToken;
   let result;
-  console.log("req.headers ", req.headers);
-  console.log("auth", req.headers.authorization);
-  console.log("Auth", req.headers.Authorization);
   try {
     result = req.headers.authorization.split(" ")[1];
     if (result) {
       decodedToken = jwToken.verify(result, "a-secret-key");
     }
   } catch (err) {
-    err.message = `Unauthorized. Log in details are incorrect.`;
+    // err.message = `Unauthorized. Log in details are incorrect.`;
     return next(err);
   }
   if (!decodedToken) {
@@ -42,22 +49,41 @@ router.get("/", async (req, res, next) => {
 //creates a new feedback item in db
 // permissions: S
 router.post("/", async (req, res, next) => {
+  let newItem = req.body;
   let decodedToken;
+  let result;
   try {
-    decodedToken = await authenticate(req.cookies);
+    result = req.headers.authorization.split(" ")[1];
+    if (result) {
+      decodedToken = jwToken.verify(result, "a-secret-key");
+    } else {
+      //if there is no jwt token in the header
+      return res.status(400).send(`Not logged in`);
+    }
+  } catch (err) {
+    //if there was a token but it was expired
+    err.message = "login session expired";
+    return next(err);
+  }
+  try {
     if (decodedToken) {
       const foundUser = await UserModel.findOne({ _id: decodedToken.sub });
+      console.log("foundUser is:", foundUser);
       if (foundUser.role === "Student") {
-        await feedbackMethod.createOne(req.body);
+        newItem = { ...newItem, srcId: decodedToken.sub, isRemoved: false };
+        await feedbackMethod.createOne(newItem);
+        return res
+          .status(200)
+          .send(`feedback successfully added: ${newItem.text}`);
       } else {
         return res.status(401).send(`Only students can write feedback`);
       }
+    } else {
+      throw new Error(`decodedToken is invalid. (Token is ${decodedToken})`);
     }
   } catch (err) {
-    // err.message = `unauthorized. Log in details are incorrect.`;
     return next(err);
   }
-  return res.status(200).send(`feedback successfully added: ${req.body.text}`);
 });
 
 //updates an existing feedback item in db

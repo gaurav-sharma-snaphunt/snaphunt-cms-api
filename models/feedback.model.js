@@ -4,7 +4,7 @@ const feedbackSchema = mongoose.Schema({
   text: { type: String, required: true },
   isRemoved: { type: Boolean, required: true },
   timeStamp: { type: Date, default: Date.now },
-  session: { type: String },
+  session: { type: String, required: true },
   category: { type: String, required: true },
   srcId: { type: String, required: true },
 });
