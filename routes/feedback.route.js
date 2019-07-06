@@ -7,15 +7,11 @@ const jwToken = require("jsonwebtoken");
 
 const authenticate = async reqHeaderAuthorization => {
   let decodedToken;
-  console.log("auth is: ", reqHeaderAuthorization);
   let result = reqHeaderAuthorization.split(" ")[1];
-  console.log("result is: ", result);
-  if (result == null) {
-    console.log("entered result is null block");
+  if (result === "null") {
     throw new Error("Not logged in");
   }
   try {
-    console.log("i have entered");
     decodedToken = await jwToken.verify(result, "a-secret-key");
     return decodedToken;
   } catch (err) {
@@ -28,6 +24,7 @@ const authenticate = async reqHeaderAuthorization => {
 router.get("/", async (req, res, next) => {
   try {
     let decodedToken = await authenticate(req.headers.authorization);
+    console.log("get/Feedback API was called");
     const foundFeedback = await FeedbackModel.find({ isRemoved: false });
     return res.status(200).json(foundFeedback);
   } catch (err) {
@@ -50,7 +47,8 @@ router.post("/", async (req, res, next) => {
         .status(200)
         .send(`feedback successfully added: ${newItem.text}`);
     } else {
-      return res.status(401).send(`Only students can write feedback`);
+      // return res.status(401).send(`Only students can write feedback`);
+      throw new Error(`Only students can write feedback`);
     }
   } catch (err) {
     return next(err);
@@ -76,27 +74,44 @@ router.put("/:id", async (req, res, next) => {
 //deletes a feedback item in db
 // permissions: S(self)
 router.delete("/:id", async (req, res, next) => {
-  let decodedToken;
+  console.log("delete API has been called");
   let deletedFeedback;
   try {
-    decodedToken = await authenticate(req.cookies);
-    if (decodedToken) {
-      const deletedFeedback = await FeedbackModel.findOneAndRemove(
-        req.params.id
-      );
+    let decodedToken = await authenticate(req.headers.authorization);
+    console.log("authenticate done", decodedToken);
+    console.log("req.params.id", req.params.id)
+    const feedbackItemToDelete = await FeedbackModel.findOne({_id: req.params.id});
+    console.log("feedbackItemToDelete", feedbackItemToDelete.srcId);
+    console.log("decodedToden.sub", decodedToken.sub)
+    if (feedbackItemToDelete.srcId === decodedToken.sub) {
+      deletedFeedback = await FeedbackModel.findOneAndDelete({_id: req.params.id});
+      res
+        .status(200)
+        .send(`Successfully deleted feedback item ${deletedFeedback.text}`);
+    } else {
+      throw new Error("Can only delete your own feedback");
     }
   } catch (err) {
-    // err.status = 500;
-    // err.message = `Could not delete feedback item with id ${req.params.id}`;
     return next(err);
   }
-  res
-    .status(200)
-    .send(`Successfully deleted feedback item ${deletedFeedback.text}`);
 });
 
 //archives all open feedback items
 // permissions: I
-router.post("/archive", (req, res) => {});
+router.post("/archive", async (req, res, next) => {
+  try {
+    let decodedToken = await authenticate(req.headers.authorization);
+    const foundUser = await UserModel.findOne({ _id: decodedToken.sub });
+    console.log("foundUser is:", foundUser);
+    if (foundUser.role === "Instructor") {
+      await FeedbackModel.updateMany(
+        { isRemoved: false },
+        { $set: { isRemoved: true } }
+      );
+    }
+  } catch (err) {
+    return next(err);
+  }
+});
 
 module.exports = router;
