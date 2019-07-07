@@ -3,6 +3,7 @@ const app = express();
 var cookieParser = require("cookie-parser");
 const feedbackRouter = require("./routes/feedback.route");
 const jwtRouter = require("./routes/jwt.route");
+const sessionRouter = require("./routes/session.route");
 const cors = require("cors");
 
 app.use(express.json());
@@ -11,6 +12,7 @@ app.use(cors());
 
 app.use("/feedback", feedbackRouter);
 app.use("/jwt", jwtRouter);
+app.use("/session", sessionRouter);
 
 //returns Hello World
 app.get("/", (req, res) => {
@@ -27,7 +29,7 @@ app.use((err, req, res, next) => {
       .send("Error: something unexpected has happened. Error has no handler.");
   }
   //   return res.status(400).send({ message: err.message });
-  return res.status(403).send({message: err.message});
+  return res.status(403).send({ message: err.message });
 });
 
 module.exports = app;
