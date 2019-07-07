@@ -27,7 +27,7 @@ app.use((err, req, res, next) => {
       .send("Error: something unexpected has happened. Error has no handler.");
   }
   //   return res.status(400).send({ message: err.message });
-  return res.status(403).send(err.message);
+  return res.status(403).send({message: err.message});
 });
 
 module.exports = app;

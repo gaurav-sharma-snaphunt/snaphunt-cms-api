@@ -22,6 +22,7 @@ const authenticate = async reqHeaderAuthorization => {
 // returns array of all feedback items in db
 // permissions: S,I
 router.get("/", async (req, res, next) => {
+  console.log("entered get/feedback")
   try {
     let decodedToken = await authenticate(req.headers.authorization);
     console.log("get/Feedback API was called");

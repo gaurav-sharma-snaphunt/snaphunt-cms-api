@@ -23,15 +23,22 @@ router.get("/", (req, res) => {
 
 //logs valid user into app based on user's username and password
 router.post("/login", async (req, res) => {
+  // console.log("jwt/login called");
   const { username, password } = req.body;
   const foundUser = await UserModel.findOne({ username, password });
+  // console.log("jwt/login userfound", foundUser);
   if (foundUser) {
+    // console.log("entered founduser conditional");
     const jwt = await generateToken(foundUser);
-    res.cookie("JWT", jwt, { expires: new Date(Date.now() + 1000 * 60 * 15) }); //cookie expires in 15 minutes, makes cookie persistent.
-    return res.status(200).json({ username: foundUser.username, token: jwt });
+    // console.log("token generated", jwt);
+    // res.cookie("JWT", jwt, { expires: new Date(Date.now() + 1000 * 60 * 15) }); //cookie expires in 15 minutes, makes cookie persistent.
+    // console.log("cookie made");
+    res.status(200).send({ username: foundUser.username, token: jwt });
+    // console.log("aft send");
   } else {
     return res.status(401).json("User not found");
   }
+  console.log("reached the end");
 });
 
 //logs user out of app
