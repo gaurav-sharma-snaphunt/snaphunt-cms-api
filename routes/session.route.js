@@ -24,9 +24,7 @@ router.get("/", async (req, res, next) => {
   try {
     const decodedToken = await authenticate(req.headers.authorization);
     const foundSession = await SessionModel.find();
-    console.log("founfSession", foundSession);
     const foundUser = await UserModel.findOne({ _id: foundSession[0].srcId });
-    console.log("foundUser", foundUser);
     return res
       .status(200)
       .json({ session: foundSession[0].thisSession, instructor: foundUser.name });
@@ -42,8 +40,6 @@ router.post("/", async (req, res, next) => {
     const foundUser = await UserModel.findOne({ _id: decodedToken.sub });
     if (foundUser.role === "Instructor") {
       const sessionList = await SessionModel.find();
-      console.log("sessionList is", sessionList);
-      console.log("req.body.session is", req.body.session);
       if (sessionList.length > 0) {
         await SessionModel.findOneAndUpdate(
           { _id: sessionList[0]._id },
@@ -68,12 +64,5 @@ router.post("/", async (req, res, next) => {
     return next(err);
   }
 });
-
-// router.put("/:sessionName", async (req, res, next) => {
-//     try{
-//         const updatedItem = await SessionModel.findByIdAndUpdate({thisSession: req.params.sessionName, completed: true})
-//         res.status(200).send("session successfully removed");
-//     }
-// })
 
 module.exports = router;

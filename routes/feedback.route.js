@@ -41,7 +41,6 @@ router.post("/", async (req, res, next) => {
   try {
     let decodedToken = await authenticate(req.headers.authorization);
     const foundUser = await UserModel.findOne({ _id: decodedToken.sub });
-    console.log("foundUser is:", foundUser);
     if (foundUser.role === "Student") {
       newItem = { ...newItem, srcId: decodedToken.sub, isRemoved: false };
       await feedbackMethod.createOne(newItem);
@@ -49,7 +48,6 @@ router.post("/", async (req, res, next) => {
         .status(200)
         .send(`feedback successfully added: ${newItem.text}`);
     } else {
-      // return res.status(401).send(`Only students can write feedback`);
       throw new Error(`Only students can write feedback`);
     }
   } catch (err) {
@@ -80,13 +78,9 @@ router.delete("/:id", async (req, res, next) => {
   let deletedFeedback;
   try {
     let decodedToken = await authenticate(req.headers.authorization);
-    console.log("authenticate done", decodedToken);
-    console.log("req.params.id", req.params.id);
     const feedbackItemToDelete = await FeedbackModel.findOne({
       _id: req.params.id
     });
-    console.log("feedbackItemToDelete", feedbackItemToDelete.srcId);
-    console.log("decodedToden.sub", decodedToken.sub);
     if (feedbackItemToDelete.srcId === decodedToken.sub) {
       deletedFeedback = await FeedbackModel.findOneAndDelete({
         _id: req.params.id
@@ -108,7 +102,6 @@ router.post("/archive", async (req, res, next) => {
   try {
     let decodedToken = await authenticate(req.headers.authorization);
     const foundUser = await UserModel.findOne({ _id: decodedToken.sub });
-    console.log("foundUser is:", foundUser);
     if (foundUser.role === "Instructor") {
       await FeedbackModel.updateMany(
         { isRemoved: false },
