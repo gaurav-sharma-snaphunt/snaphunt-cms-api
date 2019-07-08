@@ -7,7 +7,7 @@ const mongoOptions = {
 const production = true;
 
 const dbUrl = production
-  ? process.env.__MONGODB_URI__ || "mongodb://localhost:27017/Feedback"
+  ? process.env.MONGODB_URI || "mongodb://localhost:27017/Feedback"
   : global.__MONGO_URI__ || "mongodb://localhost:27017/Feedback";
 
 // const dbUrl = global.__MONGO_URI__ || "mongodb://localhost:27017/Feedback"; //Database name
