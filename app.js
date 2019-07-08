@@ -1,13 +1,13 @@
 const express = require("express");
 const app = express();
-var cookieParser = require("cookie-parser");
+// var cookieParser = require("cookie-parser");
 const feedbackRouter = require("./routes/feedback.route");
 const jwtRouter = require("./routes/jwt.route");
 const sessionRouter = require("./routes/session.route");
 const cors = require("cors");
 
 app.use(express.json());
-app.use(cookieParser());
+// app.use(cookieParser());
 app.use(cors());
 
 app.use("/feedback", feedbackRouter);

@@ -41,30 +41,38 @@ describe("Feedback", () => {
   });
 
   describe("/feedback", () => {
+    const token =
+      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI1ZDIyOTA5NjZlYTQyOTM5NTRlNmFmMGUiLCJpYXQiOjE1NjI1NDg4OTcyNjQsImV4cCI6MTU2MjU0ODkwMDg2NH0.G3sv08vOQdIQ9-XClKj-RxzS8_ZhtrgNPVTXGWfrkHU";
+
     it("/GET should return all feedback items", async () => {
       const collection = db.collection("feedbacks");
       await collection.insertOne(mockData);
 
-      const response = await request(app).get("/feedback");
-
-      expect(response.body[0].id).toEqual(mockData.id);
+      const response = await request(app)
+        .get("/feedback")
+        .set("Content-Type", "application/json")
+        .set("Authorization", "Bearer " + token);
+      console.log("collection", response.body);
+      expect(response.body).toEqual(
+        `feedback successfully added: ${mockData.text}`
+      );
     });
 
-    it("/POST should create a feedback item", async () => {
+    xit("/POST should create a feedback item", async () => {
       const collection = db.collection("feedback");
       await collection.insertOne(mockData);
       const newData = {
         text: "We can do pair programming!",
-        isRemoved: false,
         category: "Suggestion",
         session: "Javascript in depth"
       };
       const response = await request(app)
         .post(`/feedback`)
         .send(newData)
-        .set("Content-Type", "application/json");
+        .set("Content-Type", "application/json")
+        .set("Authorization", "Bearer " + token);
       expect(response.status).toEqual(200);
-      const foundFeedback = await collection.find3({
+      const foundFeedback = await collection.find({
         text: "We can do pair programming!"
       });
       expect(foundFeedback.id).toEqual(newData.id);
