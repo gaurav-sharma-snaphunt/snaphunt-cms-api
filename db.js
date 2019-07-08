@@ -4,8 +4,14 @@ const mongoOptions = {
   useNewUrlParser: true
 };
 
-const dbUrl = global.__MONGO_URI__ || "mongodb://localhost:27017/Feedback"; //Database name
-// const dbUrl = process.env.__MONGODB_URI__ || "mongodb://localhost:27017/Feedback"; //Database name
+const production = true;
+
+const dbUrl = production
+  ? process.env.__MONGODB_URI__ || "mongodb://localhost:27017/Feedback"
+  : global.__MONGO_URI__ || "mongodb://localhost:27017/Feedback";
+
+// const dbUrl = global.__MONGO_URI__ || "mongodb://localhost:27017/Feedback"; //Database name
+
 mongoose.connect(dbUrl, mongoOptions); //establishing connection between server and db
 const db = mongoose.connection;
 
