@@ -28,7 +28,7 @@ router.get("/", async (req, res, next) => {
     const foundUser = await UserModel.findOne({ _id: decodedToken.sub });
     console.log("get/Feedback API was called");
     const foundFeedback = await FeedbackModel.find({ isRemoved: false });
-    return res.status(200).json({fbItems: foundFeedback, userRole: foundUser.role, userName: foundUser.name});
+    return res.status(200).json({fbItems: foundFeedback, userRole: foundUser.role, userName: foundUser.name, userId: foundUser.id});
   } catch (err) {
     return next(err);
   }
@@ -73,17 +73,18 @@ router.put("/:id", async (req, res, next) => {
 
 //deletes a feedback item in db
 // permissions: S(self)
-router.delete("/:id", async (req, res, next) => {
+router.delete("/", async (req, res, next) => {
   console.log("delete API has been called");
   let deletedFeedback;
   try {
     let decodedToken = await authenticate(req.headers.authorization);
-    const feedbackItemToDelete = await FeedbackModel.findOne({
-      _id: req.params.id
+    const feedbackItemToDelete = await FeedbackModel.findOne({ 
+      srcId: decodedToken.sub, text: req.body.text, category: req.body.category
     });
-    if (feedbackItemToDelete.srcId === decodedToken.sub) {
+    console.log(feedbackItemToDelete)
+    if (feedbackItemToDelete) {
       deletedFeedback = await FeedbackModel.findOneAndDelete({
-        _id: req.params.id
+        _id: feedbackItemToDelete._id
       });
       res
         .status(200)
