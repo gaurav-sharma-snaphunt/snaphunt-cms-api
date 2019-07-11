@@ -7,7 +7,12 @@ const sessionRouter = require("./routes/session.route");
 const cors = require("cors");
 
 const corsOptions = {
-  origin: [/\.herokuapp\.com$/ , /\.netlify\.com$/],
+  origin: [
+    /\.herokuapp\.com$/,
+    /\.netlify\.com$/,
+    "http://localhost:3000",
+    "http://localhost:3001"
+  ], //whitelisted domains
   preflightContinue: false,
   optionsSuccessStatus: 204
 };
@@ -30,12 +35,9 @@ app.get("/", (req, res) => {
 app.use((err, req, res, next) => {
   console.log("app.js error handler was called");
   if (!err.message) {
-    return res
-      .status(500)
-      .send("Error: something unexpected has happened. Error has no handler.");
+    return res.status(500).send("Error: something unexpected has happened.");
   }
-  //   return res.status(400).send({ message: err.message });
-  return res.status(403).send({ message: err.message });
+  return res.status(403).send(err.message);
 });
 
 module.exports = app;

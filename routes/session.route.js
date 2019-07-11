@@ -2,32 +2,34 @@ const express = require("express");
 const router = express.Router();
 const SessionModel = require("../models/session.model");
 const UserModel = require("../models/user.model");
-const jwToken = require("jsonwebtoken");
+// const jwToken = require("jsonwebtoken");
 const sessionMethod = require("../methods/session.methods");
+const authenticate = require("../authenticate");
 
-const authenticate = async reqHeaderAuthorization => {
-  let decodedToken;
-  let result = reqHeaderAuthorization.split(" ")[1];
-  if (result === "null") {
-    throw new Error("Not logged in");
-  }
-  try {
-    decodedToken = await jwToken.verify(result, "a-secret-key");
-    return decodedToken;
-  } catch (err) {
-    throw new Error("Session expired");
-  }
-};
+// const authenticate = async reqHeaderAuthorization => {
+//   let decodedToken;
+//   let result = reqHeaderAuthorization.split(" ")[1];
+//   if (result === "null") {
+//     throw new Error("Not logged in");
+//   }
+//   try {
+//     decodedToken = await jwToken.verify(result, "a-secret-key");
+//     return decodedToken;
+//   } catch (err) {
+//     throw new Error("Session expired");
+//   }
+// };
 
 router.get("/", async (req, res, next) => {
   console.log("entered get/session");
   try {
     const decodedToken = await authenticate(req.headers.authorization);
     const foundSession = await SessionModel.find();
-    const foundUser = await UserModel.findOne({ _id: foundSession[0].srcId });
-    return res
-      .status(200)
-      .json({ session: foundSession[0].thisSession, instructor: foundUser.name });
+    const foundUserId = await UserModel.findOne({ _id: foundSession[0].srcId });
+    return res.status(200).json({
+      session: foundSession[0].thisSession,
+      instructor: foundUserId.name
+    });
   } catch (err) {
     return next(err);
   }
