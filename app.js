@@ -8,7 +8,7 @@ const cors = require("cors");
 
 const corsOptions = {
   origin: [/\.herokuapp\.com$/ , /\.netlify\.com$/],
-  preflightContinue: true,
+  preflightContinue: false,
   optionsSuccessStatus: 204
 };
 app.use(cors(corsOptions));
