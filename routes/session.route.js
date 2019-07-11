@@ -2,7 +2,6 @@ const express = require("express");
 const router = express.Router();
 const SessionModel = require("../models/session.model");
 const UserModel = require("../models/user.model");
-// const jwToken = require("jsonwebtoken");
 const sessionMethod = require("../methods/session.methods");
 const authenticate = require("../authenticate");
 
@@ -12,7 +11,7 @@ router.get("/", async (req, res, next) => {
     await authenticate(req.headers.authorization);
     const foundSession = await SessionModel.find();
     const foundUserId = await UserModel.findOne({ _id: foundSession[0].srcId });
-    return res.status(200).json({
+    return res.status(200).send({
       session: foundSession[0].thisSession,
       instructor: foundUserId.name
     });
@@ -37,7 +36,7 @@ router.post("/", async (req, res, next) => {
           .status(200)
           .send(`Session successfully updated: ${req.body.session}`);
       } else {
-        const newSessionTitle = await sessionMethod.createOne({
+        await sessionMethod.createOne({
           thisSession: req.body.session,
           srcId: decodedToken.sub
         });

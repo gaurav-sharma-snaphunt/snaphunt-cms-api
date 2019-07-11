@@ -112,7 +112,7 @@ router.post("/archive", async (req, res, next) => {
         .status(200)
         .send(`successfully compiled feedback from current session`);
     } else {
-      res.status(403).send(`Only instructors can archive feedback`);
+      throw new Error("Only instructors can archive feedback");
     }
   } catch (err) {
     return next(err);
