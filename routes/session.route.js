@@ -6,24 +6,10 @@ const UserModel = require("../models/user.model");
 const sessionMethod = require("../methods/session.methods");
 const authenticate = require("../authenticate");
 
-// const authenticate = async reqHeaderAuthorization => {
-//   let decodedToken;
-//   let result = reqHeaderAuthorization.split(" ")[1];
-//   if (result === "null") {
-//     throw new Error("Not logged in");
-//   }
-//   try {
-//     decodedToken = await jwToken.verify(result, "a-secret-key");
-//     return decodedToken;
-//   } catch (err) {
-//     throw new Error("Session expired");
-//   }
-// };
-
 router.get("/", async (req, res, next) => {
-  console.log("entered get/session");
+  console.log("get/session is called");
   try {
-    const decodedToken = await authenticate(req.headers.authorization);
+    await authenticate(req.headers.authorization);
     const foundSession = await SessionModel.find();
     const foundUserId = await UserModel.findOne({ _id: foundSession[0].srcId });
     return res.status(200).json({
@@ -49,15 +35,15 @@ router.post("/", async (req, res, next) => {
         );
         return res
           .status(200)
-          .json(`Session successfully updated: ${sessionList}`);
+          .send(`Session successfully updated: ${req.body.session}`);
       } else {
-        await sessionMethod.createOne({
+        const newSessionTitle = await sessionMethod.createOne({
           thisSession: req.body.session,
           srcId: decodedToken.sub
         });
         return res
           .status(200)
-          .json(`Session successfully added: ${sessionList}`);
+          .send(`Session successfully added: ${req.body.session}`);
       }
     } else {
       throw new Error("Only instructors are allowed to edit this field");

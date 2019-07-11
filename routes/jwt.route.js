@@ -10,7 +10,7 @@ const generateToken = user => {
       iat: new Date().getTime()
     },
     "a-secret-key",
-    { expiresIn: "1h" } //token expires in 1 hour. Not limiting factor as cookie expires in 15 minutes.
+    { expiresIn: "1h" } //token expires in 1 hour.
   );
 };
 
@@ -28,9 +28,8 @@ router.post("/login", async (req, res) => {
     // res.cookie("JWT", jwt, { expires: new Date(Date.now() + 1000 * 60 * 15) }); //cookie expires in 15 minutes, makes cookie persistent.
     res.status(200).send({ username: foundUser.username, token: jwt });
   } else {
-    return res.status(401).json("User not found");
+    throw new Error("User not found")
   }
-  console.log("reached the end");
 });
 
 module.exports = router;
