@@ -7,7 +7,7 @@ const sessionRouter = require("./routes/session.route");
 const cors = require("cors");
 
 const corsOptions = {
-  origin: /\.herokuapp\.com$/,
+  origin: [/\.herokuapp\.com$/ , /\.netlify\.com$/],
   preflightContinue: true,
   optionsSuccessStatus: 204
 };
