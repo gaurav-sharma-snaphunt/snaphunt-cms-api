@@ -20,15 +20,21 @@ router.get("/", (req, res) => {
 });
 
 //logs valid user into app based on user's username and password
-router.post("/login", async (req, res) => {
-  const { username, password } = req.body;
-  const foundUser = await UserModel.findOne({ username, password });
-  if (foundUser) {
-    const jwt = await generateToken(foundUser);
-    // res.cookie("JWT", jwt, { expires: new Date(Date.now() + 1000 * 60 * 15) }); //cookie expires in 15 minutes, makes cookie persistent.
-    res.status(200).send({ username: foundUser.username, token: jwt });
-  } else {
-    throw new Error("User not found")
+router.post("/login", async (req, res, next) => {
+  try {
+    const { username, password } = req.body;
+    const foundUser = await UserModel.findOne({ username, password });
+    console.log("founduser", foundUser);
+    if (foundUser) {
+      const jwt = await generateToken(foundUser);
+      // res.cookie("JWT", jwt, { expires: new Date(Date.now() + 1000 * 60 * 15) }); //cookie expires in 15 minutes, makes cookie persistent.
+      return res.status(200).send({ username: foundUser.username, token: jwt });
+    } else {
+      console.log("entered else block");
+      throw new Error("User not found");
+    }
+  } catch (err) {
+     next(err);
   }
 });
 
