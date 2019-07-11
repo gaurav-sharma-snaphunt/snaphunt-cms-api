@@ -6,12 +6,13 @@ const jwtRouter = require("./routes/jwt.route");
 const sessionRouter = require("./routes/session.route");
 const cors = require("cors");
 
-app.use(cors());
 const corsOptions = {
-  origin: true,
-  credentials: true
+  origin: /\.heroku\.com$/,
+  preflightContinue: true,
+  optionsSuccessStatus: 204
 };
-app.options("*", cors());
+app.use(cors(corsOptions));
+
 app.use(express.json());
 // app.use(cookieParser());
 

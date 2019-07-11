@@ -33,15 +33,4 @@ router.post("/login", async (req, res) => {
   console.log("reached the end");
 });
 
-//logs user out of app
-// router.post("/logout", (req, res, next) => {
-//   try {
-//     res.clearCookie("JWT");
-//   } catch (err) {
-//     err.message = `Unable to log out as jwt cookie could not be cleared.`;
-//     return next(err);
-//   }
-//   res.status(200).json("Logged out successfully");
-// });
-
 module.exports = router;
