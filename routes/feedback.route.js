@@ -26,6 +26,7 @@ router.get("/", async (req, res, next) => {
   try {
     let decodedToken = await authenticate(req.headers.authorization);
     const foundUser = await UserModel.findOne({ _id: decodedToken.sub });
+    if (!foundUser) {throw new Error("Could not find user")}
     console.log("get/Feedback API was called");
     const foundFeedback = await FeedbackModel.find({ isRemoved: false });
     return res.status(200).json({fbItems: foundFeedback, userRole: foundUser.role, userName: foundUser.name, userId: foundUser.id});

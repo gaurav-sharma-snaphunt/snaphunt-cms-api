@@ -7,6 +7,11 @@ const sessionRouter = require("./routes/session.route");
 const cors = require("cors");
 
 app.use(cors());
+const corsOptions = {
+  origin: true,
+  credentials: true
+};
+app.options("*", cors(corsOptions));
 app.use(express.json());
 // app.use(cookieParser());
 
