@@ -1,13 +1,16 @@
 const jwToken = require("jsonwebtoken");
 
 const authenticate = async reqHeaderAuthorization => {
-  let decodedToken;
-  let result = reqHeaderAuthorization.split(" ")[1];
-  if (result === "null") {
-    throw new Error("Not logged in");
+  if (!reqHeaderAuthorization) {
+    throw new Error("Please log in");
   }
+  let token = reqHeaderAuthorization.split(" ")[1];
   try {
-    decodedToken = await jwToken.verify(result, "a-secret-key");
+    let decodedToken;
+    jwToken.verify(token, "a-secret-key", (err, decoded) => {
+      decodedToken = decoded;
+    });
+
     return decodedToken;
   } catch (err) {
     throw new Error("Session expired");

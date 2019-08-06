@@ -6,7 +6,6 @@ const sessionMethod = require("../methods/session.methods");
 const authenticate = require("../authenticate");
 
 router.get("/", async (req, res, next) => {
-  console.log("get/session is called");
   try {
     await authenticate(req.headers.authorization);
     const foundSession = await SessionModel.find();
@@ -22,7 +21,6 @@ router.get("/", async (req, res, next) => {
 
 router.post("/", async (req, res, next) => {
   try {
-    console.log("post session is called");
     const decodedToken = await authenticate(req.headers.authorization);
     const foundUser = await UserModel.findOne({ _id: decodedToken.sub });
     if (foundUser.role === "Instructor") {

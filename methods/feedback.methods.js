@@ -1,6 +1,4 @@
-const mongoose = require("mongoose");
-// require('feedback.model.js');
-// const FeedbackModel = mongoose.model("Feedback");
+require("mongoose");
 const FeedbackModel = require("../models/feedback.model");
 
 module.exports.createOne = async item => {
