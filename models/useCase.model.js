@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-const feedbackSchema = mongoose.Schema({
+const useCaseSchema = mongoose.Schema({
   text: { type: String, required: true },
   isRemoved: { type: Boolean, required: true },
   timeStamp: { type: Date, default: Date.now },
@@ -9,6 +9,6 @@ const feedbackSchema = mongoose.Schema({
   srcId: { type: String, required: true },
 });
 
-const FeedbackModel = mongoose.model("Feedback", feedbackSchema); //what is the relation between "Feedback" and FeedbackModel?
+const UseCaseModel = mongoose.model("UseCase", useCaseSchema); //what is the relation between "Feedback" and FeedbackModel?
 
-module.exports = FeedbackModel;
+module.exports = UseCaseModel;

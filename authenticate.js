@@ -2,7 +2,7 @@ const jwToken = require("jsonwebtoken");
 
 const authenticate = async reqHeaderAuthorization => {
   if (!reqHeaderAuthorization) {
-    throw new Error("Please log in");
+    throw new Error("User not signed in");
   }
   let token = reqHeaderAuthorization.split(" ")[1];
   try {
